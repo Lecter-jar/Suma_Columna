@@ -5,6 +5,7 @@
  */
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Scanner;
 
 /**
@@ -20,14 +21,17 @@ import java.util.Scanner;
 public class Suma_Columna {
     
     //declaracion de variables
-    private static int fil, col , cont = 0;
-    private static String matriz;
+    private static int fil, col , cont = 0, cont2 = 0, sumacol, totalm = 0, mayor = 0, columna;
+    private static String matriz, fila;
     
     //declaracion de variables tipo objeto
     private static Scanner sc = new Scanner(System.in);
     private static String[] arrstr;
     private static int[][] matrizn;
     private static ArrayList<Integer> lista = new ArrayList<>();
+    private static ArrayList<Integer> listasum = new ArrayList<>();
+    private static HashMap<String, Integer> mapa = new HashMap<>();
+    
     
     /**
      * @param args the command line arguments
@@ -39,6 +43,8 @@ public class Suma_Columna {
         obtenerFilCol(matriz);
         creandoArray(matriz);
         formandoMatriz();
+        recorremap();
+        System.out.println(recorrelisum());
     }
     
     
@@ -63,28 +69,15 @@ public class Suma_Columna {
      */
     public static void obtenerFilCol(String cad) {
        
-        realizarSplit(arrstr, cad);
+        arrstr = cad.split(" ");
         
         fil = Integer.parseInt(arrstr[0]);
         col = Integer.parseInt(arrstr[1]);
-                
+        
+        totalm = fil * col;
     }
     
-    /**
-     * Metodo que realiza un split a una cadena,
-     * quitandole los espacios en blanco,
-     * asignando el resultado a un
-     * array de tipo string.
-     * @param arraystr para almacenar el resultado 
-     * del split.
-     * @param cadena para aplicarle el metodo
-     * split.
-     */
-    public static void  realizarSplit(String[] arraystr, String cadena) {
-        
-        arraystr = cadena.split(" ");
-        
-    }
+
     
     /**
      * Metodo que recibe la cadena de numeros,
@@ -96,7 +89,7 @@ public class Suma_Columna {
      */
     public static void creandoArray(String mat) {
         
-        realizarSplit(arrstr, mat);
+        arrstr = mat.split(" ");
         
         for(int i = 0; i < arrstr.length; i++) {
             
@@ -129,11 +122,17 @@ public class Suma_Columna {
             
             for(int c = 0; c < matrizn[f].length; c++) {     
                 
-                //se asignan los valores a la matriz
-                matrizn[f][c] = recorreLista(cont);
+                //se asigna a la variable la fila
+                fila = String.valueOf(f);
                 
-                //variables contador 
+                //se agregan los sgtes datos al mapa
+                //fila y columna , numero obtenido del 
+                //metodo recorrelista
+                mapa.put(String.valueOf(fila.concat(String.valueOf(c))), recorreLista(cont));
+                
+                //variable contador 
                 cont++;
+                
             
             }
         }
@@ -164,6 +163,61 @@ public class Suma_Columna {
         }
         
         return numero;
+    }
+    
+    /**
+     * Metodo que recorre el hashmap(map) para
+     * obtener los resultados correspondientes,
+     * para poder sumar los valores de las
+     * columnas de la matriz ingresada y agregarlos
+     * a una lista.
+     * 
+     */
+    public static void recorremap() { 
+        
+          //mientras cont2 sea menor al total de datos
+          // de la matriz, fila x columna.
+          do {            
+           
+            for(String key : mapa.keySet()) {
+                
+                //si la llave termina igual al cont2
+                //entonces se va a ir sumando.
+                if(key.endsWith(String.valueOf(cont2))) {       
+                    sumacol += mapa.get(key);
+                }
+                
+            }
+            //se agrega la suma obtenida a la lista
+            listasum.add(sumacol);
+            sumacol = 0;
+            cont2++;
+            
+        } while(cont2 < totalm);
+        
+    }
+    
+    /**
+     * Metodo que recorre la lista de sumas para 
+     * obtener la mayor de ellas y su indice
+     * correspondiente que seria el numero de columna.
+     * @return una cadena conformada por el indice
+     * y la suma mayor.
+     */
+    public static String recorrelisum() {
+        
+        for(int i = 0; i < listasum.size(); i++) {
+            
+            //si la suma es mayor entonces
+            // se le asigna a la variable mayor
+            if (listasum.get(i) > mayor) {
+                mayor = listasum.get(i);
+                columna = i;
+            }
+            
+        }
+        return String.valueOf(columna) + " " + mayor;
+        
     }
 
 }//fin class
